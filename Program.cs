@@ -4,7 +4,6 @@ namespace TempCs
 {
     class Program
     {
-            Console.WriteLine("Hello, World!")
         private bool TestCheck()
         {
             return true;
