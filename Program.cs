@@ -47,7 +47,7 @@ namespace TempCs
                 if (input == "0" || input.ToLower() == "knight")
                     return FigureType.Knight;
                 else                           
-                    Console.WriteLine("Тип фигуры не корректен!");
+                    Console.WriteLine("Тип фигуры не корректен! кокококо");
             }
             while (true);
         }
