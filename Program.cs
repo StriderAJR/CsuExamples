@@ -4,6 +4,11 @@ namespace TempCs
 {
     class Program
     {
+        private bool TestCheck()
+        {
+            return true;
+        }
+
         private static bool IsCorrectCoordinate(string coord)
         {
             char letter = coord[0];
