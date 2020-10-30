@@ -36,7 +36,7 @@ namespace TempCs
 
         enum FigureType
         {
-            Knight
+            Knight // !!!!!!!!!!!
         }
 
         private static FigureType ReadFigureType()
