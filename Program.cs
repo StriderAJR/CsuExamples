@@ -11,7 +11,7 @@ namespace TempCs
 
         private void TestMethod()
         {
-            Console.WriteLine("Hello");
+            Console.WriteLine("Hello"); // !!!!
         }
         
         private static bool IsCorrectCoordinate(string coord)
