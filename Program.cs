@@ -4,6 +4,11 @@ namespace TempCs
 {
     class Program
     {
+        private void TestMethod()
+        {
+            Console.WriteLine("Hello");
+        }
+        
         private static bool IsCorrectCoordinate(string coord)
         {
             char letter = coord[0];
