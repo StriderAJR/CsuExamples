@@ -1,17 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 namespace TempCs
 {
     class Program
     {
-        private bool TestCheck()
+        private string[] GetNumStrs()
         {
-            return true;
+            List<string> nums = new List<string>();
+            for(int i = '0'; i <= '9'; i++) nums.Add(i.ToString());
+            return nums.ToArray();
         }
 
-        private void TestMethod()
+        private string[] GetDigitStrs()
         {
-            Console.WriteLine("Hello"); // !!!! 111
+            string[] digits = new string['9' - '0' + 1];
+            for(int sym = '0', i = 0; sym <= '9'; sym++, i++) digits[i] = sym.ToString();
+            return digits;
+        }
+
+        private char[] GetSigns()
+        {
+            return new char[] { '+', '-', '*', '/' };
+        }
+
+        private void Test()
+        {
+            var nums = GetNumStrs();
+            var signs = GetSigns();
+
+            var bigArray = new List<string>();
+            bigArray.AddRange(nums);
+            bigArray.AddRange(signs.Select(x => x.ToString()));
+            bigArray.Add(" ");
+
+            string expression = "1    + 2 * 3 / 1";
+            expression.Replace(" ", ""); // 1+2*3/1
+            string[] parts = expression.Split(signs); // { 1, 2, 3, 1 }
+
+            List<string> newList = new List<string>(parts);
+            List<string> newList2 = parts.ToList();
+        }
+
+        private void Test2()
+        {
+            var nums = GetNumStrs();            
         }
         
         private static bool IsCorrectCoordinate(string coord)
