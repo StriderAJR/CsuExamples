@@ -103,16 +103,7 @@ namespace AdvancedFunctionBuilder
                 {
                     if (operations.Count != 0 && op.Priority < operations.Peek().Priority)
                     {
-                        Operation oldOperation = operations.Pop();
-                        object[] newOperand = new object[oldOperation.OperandCount + 1];
-                        // TODO тут проблема в том, что мы не считаем выражение, а формируем и операндом может оказаться не число, а "выражение"
-                        for (int iOp = oldOperation.OperandCount - 1; iOp >= 0; iOp--)
-                        {
-                            newOperand[iOp] = operands.Pop();
-                        }
-
-                        newOperand[oldOperation.OperandCount] = oldOperation;
-                        operands.Push(newOperand.ToList());
+                        operands.Push(ExtractLastOperation(operands, operations));
                     }
                     
                     operations.Push(op);
@@ -149,20 +140,25 @@ namespace AdvancedFunctionBuilder
         {
             while (operations.Count != 0)
             {
-                Operation oldOperation = operations.Pop();
-                object[] newOperand = new object[oldOperation.OperandCount + 1];
-                for (int i = oldOperation.OperandCount - 1; i >= 0; i--)
-                {
-                    newOperand[i] = operands.Pop();
-                }
-
-                newOperand[oldOperation.OperandCount] = oldOperation;
-                operands.Push(newOperand.ToList());
+                operands.Push(ExtractLastOperation(operands, operations));
             }
 
             return ConvertToList(operands.ToList());
         }
-        
+
+        private static List<object> ExtractLastOperation(Stack<object> operands, Stack<Operation> operations)
+        {
+            Operation oldOperation = operations.Pop();
+            object[] newOperand = new object[oldOperation.OperandCount + 1];
+            for (int i = oldOperation.OperandCount - 1; i >= 0; i--)
+            {
+                newOperand[i] = operands.Pop();
+            }
+
+            newOperand[oldOperation.OperandCount] = oldOperation;
+            return newOperand.ToList();
+        }
+
         private List<object> ConvertToList(List<object> list)
         {
             List<object> result = new List<object>();
