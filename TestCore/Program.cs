@@ -7,12 +7,12 @@ namespace Table
 {
     class Person
     {
-        public int Id;
-        public string FirstName;
-        public string LastName;
-        public DateTime BirthDate;
+        public int Id { get; private set; }
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+        public DateTime BirthDate { get; private set; }
 
-        public List<PersonRelation> Relations;
+        public List<PersonRelation> Relations { get; private set; }
 
         public string GetRelation(Person person)
         {
