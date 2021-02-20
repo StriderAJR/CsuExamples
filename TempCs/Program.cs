@@ -6,6 +6,12 @@ namespace TempCs
 {
     class Program
     {
+        public List<int> intList { get; set; }
+
+
+        public int Age;
+
+
         static void Main(string[] args)
         {
             int value1 = 65;
