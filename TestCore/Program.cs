@@ -1,151 +1,188 @@
 ﻿using Microsoft.VisualBasic.CompilerServices;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Table
 {
-    class Person
+    public class YieldExample
     {
-        public int Id { get; private set; }
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
-        public DateTime BirthDate { get; private set; }
-
-        public List<PersonRelation> Relations { get; private set; }
-
-        public string GetRelation(Person person)
+        public IEnumerator GetTestEnumerator()
         {
-            foreach(var relation in Relations)
+            for (int i = 0; i < 6; i++)
             {
-                if(relation.Person1 == person || relation.Person2 == person)
-                {
-                    if(relation.RelationType == RelationType.Parent)
-                    {
-                        if(relation.Person1 == person) return "parent";
-                        else                           return "child";
-                    }
-                    else
-                    {
-                        return relation.RelationType.ToString("G");
-                    }
-                }
+                yield return i;
             }
-
-            return string.Empty;
         }
-    }
 
-    class PersonRelation
-    {
-        public Person Person1;
-        public Person Person2;
-        public RelationType RelationType;
-    }
+        private string[] books = new[] { "book1", "book2", "book3" };
+        public IEnumerator GetBooks()
+        {
+            Console.WriteLine("Возвращаем книгу 1");
+            yield return books[0];
+            Console.WriteLine("Возвращаем книгу 2");
+            yield return books[1];
+            Console.WriteLine("Возвращаем книгу 3");
+            yield return books[2];
+            Console.WriteLine("Все. Книг больше нет.");
+        }
 
-    enum RelationType
-    {
-        Spouse, Sibling, Parent
-    }
+        public IEnumerator GetFilms()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                yield return $"Film{i + 1}";
+            }
+        }
 
+        private double xStart = 1, xEnd = 5, delta = 1;
+        private double Calculate(double x)
+        {
+            return x * 2 + Math.Log(x) / 5;
+        }
+        
+        public IEnumerator GetEnumerator()
+        {
+            for(double i = xStart; i < xEnd; i += delta)
+            {
+                yield return Calculate(i);
+            }
+        }
+
+
+    }
 
     class Program
     {
+        private static void Example1()
+        {
+            YieldExample yieldExample = new YieldExample();
+            foreach (double n in yieldExample)
+            {
+                Console.WriteLine(n);
+            }
+        }
+
+        private static void Example2()
+        {
+            YieldExample yieldExample = new YieldExample();
+
+            Console.Write("Получить итератор...");
+            var bookEnumerator = yieldExample.GetBooks();
+            Console.WriteLine("done");
+            do
+            {
+                Console.Write("Выводим значение элемента...");
+                Console.WriteLine(bookEnumerator.Current);
+                Console.WriteLine("done");
+
+                Console.WriteLine("Если можем сдвинуть интератор дальше, то продолжаем...");
+            }
+            while (bookEnumerator.MoveNext());
+            Console.WriteLine("Сдвинуть итератор не удалось. Перебор коллекции завершен.");
+        }
+
+        private static void Example3()
+        {
+            YieldExample yieldExample = new YieldExample();
+
+            Console.Write("Получить итератор...");
+            var enumerator = yieldExample.GetFilms();
+            Console.WriteLine("done");
+            while (enumerator.MoveNext())
+            {
+                Console.Write("Выводим значение элемента...");
+                Console.WriteLine(enumerator.Current);
+
+                Console.WriteLine("Если можем сдвинуть интератор дальше, то продолжаем...");
+            }
+            Console.WriteLine("Сдвинуть итератор не удалось. Перебор коллекции завершен.");
+        }
+
         public static void Main()
         {
-            string[] info = File.ReadAllLines("input.txt");
-            var list = ReadPeople(info);
-        }
-        
-        public static List<Person> ReadPeople(string[] info)
-        {
-            var result = new List<Person>();
+            //Example1();
+            //Example2();
+            //Example3();
 
-            int index = 0;
-            string[] pattern = { "Id", "FirstName", "LastName", "BirthDate" };
-            while (info[index] != string.Empty)
-            {
-                if(index == 0)
-                {
-                    pattern = info[index].Split(";");
-                }
+            ComplexNumber cn1 = new ComplexNumber(1, 1);
+            ComplexNumber cn2 = new ComplexNumber(2, 1);
 
-                result.Add(ReadPerson(info[index], pattern));
-            }
-            index++;
+            Console.WriteLine(cn1 + cn2);
+            Console.WriteLine(cn1 * 5);
+            Console.WriteLine(cn2++);
+            Console.WriteLine(++cn2);
 
-            for(int i = index; i < info.Length; i++)
-            {
-                FillPersonRelation(info[i], result);
-            }
-
-            return result;
+            //Example4();
         }
 
-        private static Person ReadPerson(string personInfo, string[] pattern)
+        public static void Example4()
         {
-            Person person = new Person();
+            OperatorOverloadingExample example = new OperatorOverloadingExample();
 
-            var parts = personInfo.Split(";");
-            for(int i = 0; i < pattern.Length; i++)
-            {
-                if(parts[i] == "Id")
-                {
-                    person.Id = int.Parse(parts[i]);
-                }
-                else if (parts[i] == "FirstName")
-                {
-                    person.FirstName = parts[i];
-                }
-                else if(parts[i] == "LastName")
-                {
-                    // ...
-                } 
-                else // BirthDate
-                {
-                    // ...
-                }
-            }
-
-            return person;
-        }
-
-        private static void FillPersonRelation(string personRelationInfo, List<Person> persons)
-        {
-            // 3<->4=spouse
-            string[] parts1 = personRelationInfo.Split("<->");
-            // 3 , 4=spouse
-            string[] parts2 = parts1[0].Split("=");
-            // 4 , spouse
-
-            int person1Id = int.Parse(parts1[0]);
-            int person2Id = int.Parse(parts2[0]);
-            string relationType = parts2[1];
-
-            PersonRelation relation = new PersonRelation();
-            relation.RelationType = GetRelationType(relationType);
-            foreach(var person in persons)
-            {
-                if(person.Id == person1Id)
-                {
-                    relation.Person1 = person;
-                    person.Relations.Add(relation);
-                } 
-                else if(person.Id == person2Id)
-                {
-                    relation.Person2 = person;
-                    person.Relations.Add(relation);
-                }
-            }
-        }
-
-        private static RelationType GetRelationType(string relation)
-        {
-            return relation == "spouse"
-                ? RelationType.Spouse
-                : relation == "sibling"
-                    ? RelationType.Sibling
-                    : RelationType.Parent;
+            Console.WriteLine(example + "???");
+            Console.WriteLine(example + 2);
+            Console.WriteLine(example == 2);
+            Console.WriteLine(example != 2);
         }
     }
- }
+
+    public class ComplexNumber
+    {
+        private int imaginaryNumber, realNumber;
+
+        public ComplexNumber(int imaginaryNumber, int realNumber)
+        {
+            this.imaginaryNumber = imaginaryNumber;
+            this.realNumber = realNumber;
+        }
+
+        public static ComplexNumber operator+(ComplexNumber left, ComplexNumber right)
+        {
+            return new ComplexNumber(
+                left.imaginaryNumber + right.imaginaryNumber, 
+                left.realNumber + right.realNumber);
+        }
+
+        public static int operator*(ComplexNumber left, int number)
+        {
+            return left.imaginaryNumber * number * number;
+        }
+
+        public static ComplexNumber operator++(ComplexNumber left)
+        {
+            return new ComplexNumber(left.imaginaryNumber++, left.realNumber++);
+        }
+
+        public override string ToString()
+        {
+            return $"{imaginaryNumber}i + {realNumber}";
+        }
+    }
+
+    public class OperatorOverloadingExample
+    {
+        private string someField = "Hello!";
+
+        public static string operator+(OperatorOverloadingExample left, string right)
+        {
+            return $"{left.someField} + {right} = success";
+        }
+
+        public static int operator+(OperatorOverloadingExample left, int right)
+        {
+            return left.someField.Length * right;
+        }
+
+        public static bool operator==(OperatorOverloadingExample left, int right)
+        {
+            return left.someField.Length == right;
+        }
+
+        public static bool operator!=(OperatorOverloadingExample left, int right)
+        {
+            return !(left == right);
+        }
+    }
+}
